@@ -4,31 +4,45 @@
 #include "SSTree.h"
 #include "Tools.h"
 #include "Windows.h"
-using namespace std;
+#include <fstream>
+#include <ctime> 
+#include "psapi.h"
 
+using namespace std;
 
 void lcss()
 {
-    
-    const char *A = "aaabbbccc", *B = "ccbbbaa";
-    uchar *text = (uchar*)"aaabbbccc$ccbbbaa";
-    
-    
-   
+		
+	string str;
+	unsigned t0, t1,t2,t3;
+
+	fstream archive("adn/adn15.txt");
+
+	archive >> str;
+	//const char *A = "aaabbbcccc", *B = "ccccbbbaa";
+	uchar *text = (uchar*)(const unsigned char *)str.c_str();
+	//uchar *text = (uchar*)"aaabbbcccccccbbbaa";
+	
     ulong n = strlen((char*)text);
     n++; 
     
-    ulong splitpos = strlen(A); 
+    ulong splitpos = 1; 
     
     cout << "\nCreando suffix tree...\n";
+	t0 = clock();
     SSTree *sst = new SSTree(text, n);
+	t1 = clock();
+	double time = (double(t1 - t0) / CLOCKS_PER_SEC);
     
-     
-    cout << "... para el texto A$B=";
+	//PRINT SCREEN
+    cout << "... para el texto ADN=";
     cout << (char*)sst->substring(0,n-1) << '\n';   
        
 
-    cout << "\nCalcular la subcadena comun de A y B...\n";
+	cout << "Tiempo de Construccion =" <<time<< endl;
+
+	cout << "\nCalculando la subcadena comun...\n";
+	t2 = clock();
 
     ulong lastleaf = sst->rightmost(0); 
     ulong i;
@@ -59,9 +73,13 @@ void lcss()
          maxindex = i;
       }
 
-   cout << "lcss(" << A << ',' << B << ")=";
+   cout << "lcss=";
    
    cout << (char*)sst->pathlabel(maxindex) << "\n\n";
+   t3 = clock();
+   double time2 = (double(t3 - t2) / CLOCKS_PER_SEC);
+   cout << "Tiempo de consulta ="<<time2 << endl;
+   
 
    delete sst;
    delete [] left;
